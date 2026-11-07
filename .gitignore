@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+
+# Dataset
+data/*
+!data/.gitkeep
+
+# Trained models
+models/*
+!models/.gitkeep
+
+# Logs
+*.log
+
+# Tests
+.pytest_cache/
+.coverage
