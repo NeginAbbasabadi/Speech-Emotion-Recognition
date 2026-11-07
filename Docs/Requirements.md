@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Speech Emotion Recognition — Software Requirements
 
 ## 1. Project Overview
