@@ -97,19 +97,3 @@ The MVP is considered functionally complete when:
 7. The completed application passes the defined integration tests.
 
 
-flowchart TD
-    A["Browser: Record or upload audio"]
-    B["Flask API: Validate input"]
-    C["Audio preprocessing"]
-    D["CNN model inference"]
-    E["JSON prediction response"]
-    F["Browser: Display emotion"]
-
-    A -->|HTTP POST| B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-
-
-Model performance will be reported separately using held-out test data. A final accuracy target will be established after baseline evaluation.
