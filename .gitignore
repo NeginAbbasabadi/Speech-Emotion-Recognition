@@ -12,11 +12,11 @@ venv/
 .vscode/
 
 # Dataset
-data/*
+data/
 !data/.gitkeep
 
 # Trained models
-models/*
+models/
 !models/.gitkeep
 
 # Logs
