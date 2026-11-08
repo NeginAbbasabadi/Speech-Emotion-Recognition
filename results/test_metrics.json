@@ -1,0 +1,12 @@
+{
+    "checkpoint_epoch": 6,
+    "test_samples": 112,
+    "test_accuracy": 0.4375,
+    "test_macro_f1": 0.42724685120614814,
+    "emotions": [
+        "neutral",
+        "happy",
+        "sad",
+        "angry"
+    ]
+}
