@@ -17,10 +17,10 @@ from ml.model import EmotionCNN, EMOTIONS
 
 
 # Training configuration
-EPOCHS = 30
+EPOCHS = 50
 BATCH_SIZE = 16
 LEARNING_RATE = 0.001
-PATIENCE = 7
+PATIENCE = 12
 SEED = 42
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -119,25 +119,27 @@ def run_epoch(model, loader, criterion, device, optimizer=None):
     }
 
 
+
+
 def save_history(history):
-    """Write all completed epochs into a CSV file."""
-    fieldnames = [
-        "epoch",
-        "train_loss",
-        "train_accuracy",
-        "train_f1",
-        "val_loss",
-        "val_accuracy",
-        "val_f1"
-    ]
+    """Save all training metrics to CSV."""
+
+    if not history:
+        return
+
+    # Automatically get column names from the
+    # training metrics dictionary.
+    fieldnames = list(history[0].keys())
 
     with open(HISTORY_PATH, "w", newline="") as file:
         writer = csv.DictWriter(
             file,
             fieldnames=fieldnames
         )
+
         writer.writeheader()
         writer.writerows(history)
+
 
 
 def plot_history(history):
@@ -211,8 +213,15 @@ def train():
     device = get_device()
     print(f"Using device: {device}")
 
-    train_dataset = RAVDESSDataset("train")
-    val_dataset = RAVDESSDataset("validation")
+    train_dataset = RAVDESSDataset(
+    "train",
+    augment=False
+    )
+
+    val_dataset = RAVDESSDataset(
+    "validation",
+    augment=False
+    )
 
     train_loader = DataLoader(
         train_dataset,
@@ -247,6 +256,13 @@ def train():
         model.parameters(),
         lr=LEARNING_RATE
     )
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer,
+    mode="min",
+    factor=0.5,
+    patience=3,
+    min_lr=1e-5
+    )
 
     history = []
     best_f1 = -1.0
@@ -273,19 +289,21 @@ def train():
         )
 
         epoch_record = {
-            "epoch": epoch,
+             "epoch": epoch,
             "train_loss": train_metrics["loss"],
             "train_accuracy": train_metrics["accuracy"],
             "train_f1": train_metrics["f1"],
             "val_loss": val_metrics["loss"],
-            "val_accuracy": val_metrics["accuracy"],
-            "val_f1": val_metrics["f1"]
+                    "val_accuracy": val_metrics["accuracy"],
+            "val_f1": val_metrics["f1"],
+            "learning_rate": optimizer.param_groups[0]["lr"]
         }
 
         history.append(epoch_record)
 
         # Persist metrics after every epoch.
         save_history(history)
+        scheduler.step(val_metrics["loss"])
 
         print(
             f"Epoch {epoch:02d}/{EPOCHS} | "
