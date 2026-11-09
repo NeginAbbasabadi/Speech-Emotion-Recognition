@@ -1,0 +1,16 @@
+{
+    "best_epoch": 8,
+    "validation_macro_f1": 0.6580132010402533,
+    "source_model": "/Users/macbook/Documents/UEF_University/Period_2/Speech-Emotion-Recognition/models/experiments/wav2vec2_frozen",
+    "unfrozen_encoder_layers": [
+        10,
+        11
+    ],
+    "seed": 42,
+    "emotions": [
+        "neutral",
+        "happy",
+        "sad",
+        "angry"
+    ]
+}
