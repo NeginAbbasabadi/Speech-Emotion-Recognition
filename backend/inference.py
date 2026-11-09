@@ -17,12 +17,7 @@ from ml.model import EmotionCNN, EMOTIONS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-MODEL_PATH = (
-    PROJECT_ROOT
-    / "models"
-    / "experiment_05"
-    / "emotion_cnn.pt"
-)
+MODEL_PATH = PROJECT_ROOT / "models" / "emotion_cnn.pt"
 
 
 def get_device():
