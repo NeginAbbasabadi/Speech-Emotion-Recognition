@@ -75,7 +75,7 @@ The response has the following structure (illustrative values):
 
 - Python 3.13 (the project's development environment); exact platform compatibility depends on the dependency versions.
 - A modern browser with microphone support (Chromium is used for automated browser tests).
-- Model checkpoints for real emotion prediction. **Model weights are not included in the Git repository.**
+- Model checkpoints for real emotion prediction. **Model weights are hosted separately on [Hugging Face](https://huggingface.co/NeginAbbasabadi/voxsense-ai); they are not included in the Git repository.**
 
 ### Clone and install
 
@@ -94,6 +94,16 @@ python -m pip install -r requirements-dev.txt
 python -m playwright install chromium
 ```
 
+### Download the production model checkpoints
+
+The public [VoxSense AI model repository on Hugging Face](https://huggingface.co/NeginAbbasabadi/voxsense-ai/tree/main) contains the production CNN checkpoint and the fine-tuned Wav2Vec2 checkpoint. After installing `requirements.txt`, run from the project root:
+
+```bash
+python scripts/download_models.py
+```
+
+This command requires the `huggingface_hub` package to be installed (include it in `requirements.txt`). It downloads the three production model files to the `models/` directory. **The command has been run successfully on the development machine; a completely clean installation and end-to-end prediction have not yet been verified.** A public model repository should not require a Hugging Face access token for downloading.
+
 **Model files:** The application expects these local paths:
 
 ```text
@@ -102,7 +112,7 @@ models/wav2vec2_finetuned/config.json
 models/wav2vec2_finetuned/model.safetensors
 ```
 
-The pretrained-model directory also needs any additional configuration files required by the saved Hugging Face checkpoint. Obtain the matching checkpoints from the project maintainer or reproduce them using the training scripts and the dataset. No public checkpoint download URL is currently documented. Without the checkpoint files, the frontend and mocked tests can run, but real predictions cannot.
+The hosted checkpoint folder currently contains `config.json` and `model.safetensors`. If real inference requires additional saved configuration, those files must also be published. Without the model files, the frontend and mocked tests can run, but real predictions cannot. The Wav2Vec2 weights downloaded from Hugging Face have been checked against the local production checkpoint using SHA-256; the hashes matched. The CNN download and a complete fresh-install inference test should still be verified.
 
 ### Run the application
 
@@ -229,12 +239,13 @@ backend/                 Flask API, preprocessing and inference
 frontend/                HTML, CSS and JavaScript UI
 ml/                      CNN architecture, data prep, training, evaluation
 ml/pretrained/           Wav2Vec2 training and evaluation
-models/                  Local checkpoints (not committed)
+models/                  Downloaded checkpoints (not committed)
 data/ravdess/             Local source recordings (not committed)
 data/processed/           Dataset split manifest
 results/                  Experiment histories and evaluation reports
 tests/                    Unit, API and integration tests
 tests/e2e/                Playwright browser tests
+scripts/download_models.py Download production checkpoints from Hugging Face
 .github/workflows/       CI configuration
 requirements.txt         Application / ML dependencies
 requirements-dev.txt     Additional testing dependencies
@@ -245,10 +256,10 @@ requirements-dev.txt     Additional testing dependencies
 - **Domain shift:** Acted RAVDESS speech differs from natural conversations, microphone recordings, languages, accents, and recording conditions.
 - **Short input window:** Both inference pipelines standardize audio to approximately three seconds; longer recordings may be cropped.
 - **Emotion interpretation:** The model estimates one of four learned labels, not a speaker's internal emotional state. Softmax confidence is not calibrated.
-- **Checkpoint distribution:** Saved weights are stored locally; documented checkpoint hosting or a repeatable download/retraining process is needed before a fresh clone can run real inference.
+- **Checkpoint distribution:** Production checkpoints are hosted publicly on Hugging Face and can be retrieved by `scripts/download_models.py`. A complete clean-install verification, including an actual inference request, is still pending.
 - **CI scope:** Standard CI uses mocked predictions and doesn't assess trained-model accuracy. Local integration/evaluation workflows handle model-backed checks.
-- **Future improvements:** Better real-world data evaluation, confidence calibration, model distribution, accessibility testing, and deployment.
+- **Future improvements:** Better real-world data evaluation, confidence calibration, accessibility testing, deployment, and automated clean-install validation.
 
 ## Project status
 
-Course prototype with a working browser interface, CNN and Wav2Vec2 inference paths, automated tests, and GitHub Actions CI. A fresh installation requires matching model checkpoints for actual emotion recognition.
+Course prototype with a working browser interface, CNN and Wav2Vec2 inference paths, automated tests, and GitHub Actions CI. The production checkpoints are publicly hosted on Hugging Face and have a download script; complete fresh-clone reproducibility remains to be tested.
