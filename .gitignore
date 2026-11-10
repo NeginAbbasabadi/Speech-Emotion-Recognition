@@ -1,58 +1,46 @@
+
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
+
+# Virtual environments
 .venv/
 venv/
+env/
+
+# Environment variables
 .env
+.env.*
 
 # macOS
 .DS_Store
 
 # IDE
 .vscode/
+.idea/
 
-# Exclude dataset contents by default
+# Datasets
 data/*
-
-# Keep the processed metadata directory
 !data/processed/
-
-# Ignore generated data inside processed/
 data/processed/*
-
-# Track only the manifest
 !data/processed/dataset_manifest.csv
+!data/.gitkeep
 
-# Trained model weights
+# Trained model checkpoints
 models/
 
-# Trained models
-models/
-!models/.gitkeep
-
-# Logs
-*.log
-
-# Tests
+# Test and coverage artifacts
 .pytest_cache/
 .coverage
-
-# Environment variables / secrets
-.env
-.env.*
-
-# Pytest cache
-.pytest_cache/
-
-# Coverage and test artifacts
 htmlcov/
 coverage.xml
 test-results/
 playwright-report/
 
+# Logs and temporary files
+*.log
+*.tmp
+
 # Local debugging
 debug_prediction.py
-
-# Python tooling
-.ruff_cache/
-.mypy_cache/
