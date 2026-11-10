@@ -169,6 +169,38 @@ Run real-model integration tests locally, after obtaining checkpoints and data:
 ```bash
 python -m pytest tests/test_model_inference.py -v
 ```
+### Code Coverage
+
+VoxSense AI uses `pytest-cov` to measure Python statement and branch coverage during automated testing.
+
+The coverage reports are generated automatically by GitHub Actions and uploaded as downloadable artifacts.
+
+#### Initial Coverage Results
+
+| Component | Coverage |
+|---|---:|
+| Flask API | 90% |
+| Audio preprocessing | 80% |
+| Audio augmentation | 76% |
+| CNN architecture | 61% |
+| Wav2Vec2 inference | 36% |
+| CNN dataset | 31% |
+| CNN inference | 25% |
+| **Overall project** | **31%** |
+
+These figures represent the initial combined statement and branch coverage, not the percentage of tests passed.
+
+The overall percentage is affected by training and evaluation scripts that are not executed during standard CI testing. Real-model inference tests are also excluded from the standard workflow because they require locally stored model checkpoints and audio data.
+
+#### Viewing the Full Coverage Report
+
+1. Open the repository's **Actions** tab.
+2. Select a successful CI workflow run.
+3. Download the `python-coverage-report` artifact.
+4. Extract the ZIP archive.
+5. Open `htmlcov/index.html` in a browser.
+
+Coverage reports are regenerated whenever the CI workflow runs.
 
 ### Coverage reports
 
