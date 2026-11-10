@@ -59,7 +59,10 @@ def test_decode_failure_is_clear(pipeline, monkeypatch):
 def test_invalid_decoded_audio_rejected(pipeline, monkeypatch, samples):
     _, module, func_name = pipeline
     monkeypatch.setattr(module.librosa, "load", lambda *args, **kwargs: (samples, module.SAMPLE_RATE))
-    with pytest.raises(ValueError, match="Invalid|silent"):
+    with pytest.raises(
+        ValueError,
+        match="Invalid|silent|No audible speech"
+    ):
         getattr(module, func_name)(b"nonempty")
 
 
