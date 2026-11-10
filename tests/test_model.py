@@ -1,4 +1,3 @@
-
 import torch
 
 from ml.model import EmotionCNN, NUM_CLASSES
