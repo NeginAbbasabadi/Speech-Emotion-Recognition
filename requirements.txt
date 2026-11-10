@@ -52,3 +52,4 @@ tzdata==2026.6
 urllib3==2.8.0
 Werkzeug==3.1.9
 transformers==5.22.2
+huggingface_hub==2.4.0
