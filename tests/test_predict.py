@@ -55,8 +55,10 @@ def test_prediction_response():
                 "audio": (
                     BytesIO(b"mock audio"),
                     "test.wav"
-                )
+            ),
+        "model": "cnn"
             },
+
             content_type="multipart/form-data"
         )
 
