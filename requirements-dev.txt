@@ -1,0 +1,6 @@
+
+-r requirements.txt
+
+pytest==9.2.0
+pytest-playwright
+pytest-cov
