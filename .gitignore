@@ -11,9 +11,20 @@ venv/
 # IDE
 .vscode/
 
-# Dataset
-data/
-!data/.gitkeep
+# Exclude dataset contents by default
+data/*
+
+# Keep the processed metadata directory
+!data/processed/
+
+# Ignore generated data inside processed/
+data/processed/*
+
+# Track only the manifest
+!data/processed/dataset_manifest.csv
+
+# Trained model weights
+models/
 
 # Trained models
 models/
@@ -25,3 +36,23 @@ models/
 # Tests
 .pytest_cache/
 .coverage
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage and test artifacts
+htmlcov/
+coverage.xml
+test-results/
+playwright-report/
+
+# Local debugging
+debug_prediction.py
+
+# Python tooling
+.ruff_cache/
+.mypy_cache/
