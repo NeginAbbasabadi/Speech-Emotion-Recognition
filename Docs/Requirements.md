@@ -1,200 +1,78 @@
-# Speech Emotion Recognition — Software Requirements
+# VoxSense AI — Software Requirements
 
-## 1. Project Overview
+## 1. Project overview
 
-The goal is to develop a full-stack web application that recognizes emotional expressions in recorded speech using a Convolutional Neural Network (CNN).
+VoxSense AI is a full-stack speech emotion recognition research prototype. A user records or uploads a short speech clip; the application predicts one of four learned labels: **happy, sad, angry or neutral**. The original MVP used a PyTorch CNN with Flask and a browser frontend. The current implementation additionally supports a fine-tuned Wav2Vec2 classifier and side-by-side model comparison.
 
-The user will record or upload a short audio clip, and the application will predict one of four emotion categories: happy, sad, angry, or neutral.
+Predictions describe learned patterns from acted speech, not a person's actual emotional or psychological state.
 
-The application will use a Flask backend, a PyTorch CNN model, and a browser-based frontend.
+## 2. Functional requirements
 
-## 2. Functional Requirements
+| ID | Requirement | Implementation scope |
+| --- | --- | --- |
+| FR-01 | Users shall be able to record a short speech clip using their microphone. | Browser recording controls |
+| FR-02 | Users shall be able to upload a supported audio recording. | WAV upload and preview |
+| FR-03 | The application shall preprocess audio consistently with the selected model's training pipeline. | CNN: log-Mel features; Wav2Vec2: normalized waveform |
+| FR-04 | The system shall predict one of four emotion labels using the CNN. | Original MVP |
+| FR-05 | The application shall display predicted label, confidence score and per-class probabilities. | Both models |
+| FR-06 | The application shall show meaningful errors for invalid audio, denied microphone permission and prediction failures. | UI/API error handling |
+| FR-07 | Users shall be able to select the CNN or fine-tuned Wav2Vec2 model. | Extension beyond original MVP |
+| FR-08 | Users shall be able to compare the two models using the same audio clip. | Extension beyond original MVP |
 
-**FR-01 — Audio Recording**
+## 3. Non-functional requirements
 
-The application shall allow users to record short speech clips using their microphone.
+| ID | Requirement | Verification / note |
+| --- | --- | --- |
+| NFR-01 | The interface should be responsive, accessible and usable on desktop and mobile browsers. | Responsive design implemented; formal accessibility audit not yet documented |
+| NFR-02 | Initial target: respond within five seconds of receiving a valid short clip on the development machine. | **Target only**; benchmark measurements are needed to claim compliance |
+| NFR-03 | Separate routing, preprocessing, model inference and frontend concerns. | Modular Python and frontend files |
+| NFR-04 | Reject invalid, empty and unsupported audio without crashing the service. | Unit and API tests |
+| NFR-05 | Provide setup instructions, API documentation, architecture diagrams and relevant code comments. | README and architecture documentation |
+| NFR-06 | Do not permanently store recordings server-side by default. | Intended privacy behavior; confirm by reviewing the deployed server configuration |
+| NFR-07 | Provide automated regression tests for the main application flow. | pytest, Playwright and GitHub Actions |
+| NFR-08 | Make production model checkpoints retrievable without committing large binary files to Git. | Hugging Face Hub and download script |
 
-**FR-02 — Audio Upload**
+## 4. Machine learning requirements
 
-The application shall allow users to upload supported audio files instead of recording directly.
+- **Dataset:** RAVDESS speech recordings for the four selected emotions.
+- **CNN features:** 64-band log-Mel spectrogram input.
+- **Wav2Vec2 input:** standardized and normalized waveform.
+- **Framework:** PyTorch; pretrained Wav2Vec2 via Hugging Face Transformers.
+- **Training:** local Apple Silicon acceleration where available.
+- **Evaluation:** accuracy, macro F1-score and confusion matrix on actor-separated evaluation splits.
+- **Robustness:** investigate augmentation and performance outside acted RAVDESS speech.
 
-**FR-03 — Audio Preprocessing**
+Previously recorded held-out RAVDESS results: CNN accuracy **50.89%**, macro F1 **48.72%**; fine-tuned Wav2Vec2 accuracy **79.46%**, macro F1 **78.08%**. These results do not establish performance on natural speech.
 
-The backend shall convert supported audio inputs into a standardized format and extract the same audio features used during model training.
+## 5. Scope
 
-**FR-04 — Emotion Classification**
+### Original MVP
 
-The CNN shall classify each processed speech recording into one of four emotion categories: happy, sad, angry, or neutral.
+The original MVP comprised microphone recording or audio upload, Flask request processing, CNN feature extraction and classification, and a visible prediction result.
 
-**FR-05 — Prediction Results**
+### Extensions implemented after MVP
 
-The application shall display the predicted emotion and an associated model confidence score.
+- Selection between CNN and fine-tuned Wav2Vec2 inference.
+- Side-by-side prediction comparison.
+- GitHub Actions CI and downloadable Python coverage reports.
+- Public model-checkpoint distribution through Hugging Face Hub.
 
-**FR-06 — Error Handling**
+### Outside the current scope
 
-The application shall display meaningful error messages when an audio file is invalid, recording permission is denied, or prediction fails.
+- Continuous live-stream emotion classification.
+- User accounts, authentication or persistent prediction history.
+- Database storage of audio recordings.
+- Additional emotion labels or multilingual performance guarantees.
 
-## 3. Non-Functional Requirements
+## 6. Acceptance criteria
 
-**NFR-01 — Usability**
+1. A user can record or upload a supported clip in the browser.
+2. The frontend sends the WAV audio and selected model name to the Flask endpoint.
+3. The backend validates audio and applies the selected preprocessing pipeline.
+4. The selected model returns a label, confidence score and class probabilities in JSON.
+5. The frontend displays the result; comparison mode can display both models' outputs.
+6. Invalid audio inputs lead to appropriate errors without crashing the service.
+7. Fast unit/API tests and browser tests pass in CI; real-model inference is checked separately with local model files and test recordings.
+8. A fresh installation can retrieve the production checkpoints using the documented download script.
 
-The interface shall be responsive, accessible, and easy to use on desktop and mobile browsers.
-
-**NFR-02 — Performance**
-
-The initial target is to return a prediction within five seconds after the server receives a valid short audio clip on the development machine. Actual performance will be measured during testing.
-
-**NFR-03 — Maintainability**
-
-The codebase shall separate audio processing, model inference, backend routing, and frontend components.
-
-**NFR-04 — Reliability**
-
-The application shall handle invalid, empty, or unsupported audio inputs without crashing.
-
-**NFR-05 — Documentation**
-
-The project shall contain setup instructions, API documentation, architecture diagrams, and code comments where appropriate.
-
-**NFR-06 — Privacy**
-
-Audio recordings shall be processed without permanent server-side storage by default.
-
-## 4. Machine Learning Requirements
-
-- Dataset: RAVDESS, initially using the speech recordings for the four selected emotions.
-- Audio features: log-Mel spectrograms or MFCC feature maps, with one approach selected before model training.
-- Model architecture: Convolutional Neural Network implemented in PyTorch.
-- Training environment: Local development machine with Apple Silicon GPU acceleration.
-- Evaluation: Accuracy, macro F1-score, and confusion matrix on recordings from held-out speakers.
-- Robustness: Evaluate the effect of background-noise augmentation.
-
-The model recognizes vocal patterns associated with acted emotional expressions; its predictions do not establish the speaker's actual emotional or psychological state.
-
-## 5. MVP Scope
-
-The first working version shall support recording or uploading a short speech clip, sending it to the Flask backend, preprocessing it, generating a CNN prediction, and displaying the result.
-
-The following features are outside the initial scope:
-
-- Continuous live speech recognition
-- User accounts and authentication
-- Database storage of recordings
-- Support for additional emotion categories
-- Emotion history and analytics dashboards
-- Multilingual emotion recognition guarantees
-
-## 6. Acceptance Criteria
-
-The MVP is considered functionally complete when:
-
-1. A user can successfully record or upload a supported audio clip.
-2. The frontend sends the recording to the Flask API.
-3. The backend preprocesses the audio and successfully executes the trained CNN.
-4. The API returns a valid JSON prediction with an emotion label and confidence score.
-5. The frontend displays the result.
-6. Invalid audio inputs generate appropriate error responses.
-7. The completed application passes the defined integration tests.
-
-
-=======
-# Speech Emotion Recognition — Software Requirements
-
-## 1. Project Overview
-
-The goal is to develop a full-stack web application that recognizes emotional expressions in recorded speech using a Convolutional Neural Network (CNN).
-
-The user will record or upload a short audio clip, and the application will predict one of four emotion categories: happy, sad, angry, or neutral.
-
-The application will use a Flask backend, a PyTorch CNN model, and a browser-based frontend.
-
-## 2. Functional Requirements
-
-**FR-01 — Audio Recording**
-
-The application shall allow users to record short speech clips using their microphone.
-
-**FR-02 — Audio Upload**
-
-The application shall allow users to upload supported audio files instead of recording directly.
-
-**FR-03 — Audio Preprocessing**
-
-The backend shall convert supported audio inputs into a standardized format and extract the same audio features used during model training.
-
-**FR-04 — Emotion Classification**
-
-The CNN shall classify each processed speech recording into one of four emotion categories: happy, sad, angry, or neutral.
-
-**FR-05 — Prediction Results**
-
-The application shall display the predicted emotion and an associated model confidence score.
-
-**FR-06 — Error Handling**
-
-The application shall display meaningful error messages when an audio file is invalid, recording permission is denied, or prediction fails.
-
-## 3. Non-Functional Requirements
-
-**NFR-01 — Usability**
-
-The interface shall be responsive, accessible, and easy to use on desktop and mobile browsers.
-
-**NFR-02 — Performance**
-
-The initial target is to return a prediction within five seconds after the server receives a valid short audio clip on the development machine. Actual performance will be measured during testing.
-
-**NFR-03 — Maintainability**
-
-The codebase shall separate audio processing, model inference, backend routing, and frontend components.
-
-**NFR-04 — Reliability**
-
-The application shall handle invalid, empty, or unsupported audio inputs without crashing.
-
-**NFR-05 — Documentation**
-
-The project shall contain setup instructions, API documentation, architecture diagrams, and code comments where appropriate.
-
-**NFR-06 — Privacy**
-
-Audio recordings shall be processed without permanent server-side storage by default.
-
-## 4. Machine Learning Requirements
-
-- Dataset: RAVDESS, initially using the speech recordings for the four selected emotions.
-- Audio features: log-Mel spectrograms or MFCC feature maps, with one approach selected before model training.
-- Model architecture: Convolutional Neural Network implemented in PyTorch.
-- Training environment: Local development machine with Apple Silicon GPU acceleration.
-- Evaluation: Accuracy, macro F1-score, and confusion matrix on recordings from held-out speakers.
-- Robustness: Evaluate the effect of background-noise augmentation.
-
-The model recognizes vocal patterns associated with acted emotional expressions; its predictions do not establish the speaker's actual emotional or psychological state.
-
-## 5. MVP Scope
-
-The first working version shall support recording or uploading a short speech clip, sending it to the Flask backend, preprocessing it, generating a CNN prediction, and displaying the result.
-
-The following features are outside the initial scope:
-
-- Continuous live speech recognition
-- User accounts and authentication
-- Database storage of recordings
-- Support for additional emotion categories
-- Emotion history and analytics dashboards
-- Multilingual emotion recognition guarantees
-
-## 6. Acceptance Criteria
-
-The MVP is considered functionally complete when:
-
-1. A user can successfully record or upload a supported audio clip.
-2. The frontend sends the recording to the Flask API.
-3. The backend preprocesses the audio and successfully executes the trained CNN.
-4. The API returns a valid JSON prediction with an emotion label and confidence score.
-5. The frontend displays the result.
-6. Invalid audio inputs generate appropriate error responses.
-7. The completed application passes the defined integration tests.
-
-
->>>>>>> b613621a32faaafc90f4634b56167135627fe1f4
+**Verification status:** Automated CI and checkpoint-download/hash checks have been reported successful. A fully clean installation, measured latency benchmark and formal accessibility assessment should be documented separately rather than assumed from those checks.
