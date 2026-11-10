@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>VoxSense AI | Speech Emotion Recognition</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+
+<body>
+<main class="container">
+
+    <header>
+        <div class="brand">◉ VOXSENSE AI</div>
+
+        <h1>Discover the emotion behind every word.</h1>
+
+        <p class="subtitle">
+            Record your voice or upload a speech recording.
+            Explore how artificial intelligence recognizes
+            emotional patterns in speech.
+        </p>
+    </header>
+
+    <section class="card studio-card">
+        <div class="section-heading">
+            <h2>Voice Studio</h2>
+            <span class="section-number">INPUT / 01</span>
+        </div>
+
+        <div class="waveform-panel">
+            <div class="waveform-top">
+                <span id="recordingIndicator"
+                      class="recording-indicator">
+                    <span class="record-dot"></span>
+                    <span id="recordingLabel">READY</span>
+                </span>
+
+                <span id="recordingTimer"
+                      class="recording-timer">00:00</span>
+            </div>
+
+            <canvas id="waveformCanvas"
+                    aria-label="Live microphone waveform">
+            </canvas>
+
+            <p id="recordingStatus" role="status"
+               aria-live="polite">
+                Ready to capture your voice
+            </p>
+        </div>
+
+        <div class="recording-buttons">
+            <button id="startRecordingBtn" type="button">
+                ● Start Recording
+            </button>
+
+            <button id="stopRecordingBtn"
+                    type="button" disabled>
+                ■ Stop Recording
+            </button>
+        </div>
+
+        <div class="input-divider">
+            <span>OR UPLOAD AUDIO</span>
+        </div>
+
+        <label for="audioFile" class="upload-area">
+            <span class="upload-icon">♫</span>
+            <strong>Choose a WAV recording</strong>
+            <small>WAV format · Maximum 10 MB</small>
+        </label>
+
+        <input type="file"
+               id="audioFile"
+               accept=".wav,audio/wav,audio/x-wav">
+
+        <p id="fileName" class="file-name"></p>
+
+        <div id="audioPreviewSection"
+             class="audio-preview hidden">
+            <p>Listen to your recording</p>
+            <audio id="audioPreview" controls></audio>
+        </div>
+
+        <div class="model-selection">
+            <label for="modelSelect">Choose AI Model</label>
+
+            <select id="modelSelect">
+                <option value="wav2vec2">
+                    Wav2Vec2 — Fine-tuned
+                </option>
+
+                <option value="cnn">
+                    CNN — Original Baseline
+                </option>
+            </select>
+        </div>
+
+        <div class="analysis-actions">
+            <button id="analyzeBtn" disabled>
+                ✦ Analyze Emotion
+            </button>
+
+            <button id="compareBtn"
+                    class="secondary-action" disabled>
+                Compare Both Models
+            </button>
+        </div>
+
+        <p id="status" role="status"
+           aria-live="polite"></p>
+    </section>
+
+    <section id="resultSection"
+             class="card hidden">
+        <div class="section-heading">
+            <h2>Emotion Analysis</h2>
+            <span class="section-number">RESULT / 02</span>
+        </div>
+
+        <div class="emotion-result">
+            <div class="emotion-identity">
+                <span id="emotionIcon"
+                      class="emotion-icon">✦</span>
+                <div>
+                    <span class="eyebrow">
+                        Predicted emotion
+                    </span>
+                    <div id="emotionLabel">—</div>
+                </div>
+            </div>
+
+            <div class="confidence">
+                <strong id="confidenceLabel">—</strong>
+                <span class="eyebrow">
+                    Model confidence
+                </span>
+            </div>
+        </div>
+
+        <p id="resultModelName"
+           class="result-model-name"></p>
+
+        <h3>Emotion Scores</h3>
+        <div id="probabilities"></div>
+    </section>
+
+    <section id="comparisonSection"
+             class="card hidden">
+        <div class="section-heading">
+            <h2>Model Comparison</h2>
+            <span class="section-number">COMPARE / 03</span>
+        </div>
+
+        <p class="comparison-description">
+            Both models analyze the same recording.
+        </p>
+
+        <div id="comparisonGrid"
+             class="comparison-grid"></div>
+    </section>
+
+    <footer>
+        <p>
+            VoxSense AI · Speech Emotion Recognition
+        </p>
+        <p>
+            Predictions are experimental and do not
+            reliably reveal a person's actual feelings.
+        </p>
+    </footer>
+
+</main>
+</body>
+</html>
