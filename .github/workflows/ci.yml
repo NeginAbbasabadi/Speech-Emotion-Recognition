@@ -34,11 +34,30 @@ jobs:
           python -m pip install -r requirements-dev.txt
           python -m pip check
 
-      - name: Run Python unit and API tests
+      
+      - name: Run Python unit and API tests with coverage
         run: |
           python -m pytest tests/ -v \
             --ignore=tests/e2e \
-            --ignore=tests/test_model_inference.py
+            --ignore=tests/test_model_inference.py \
+            --cov=backend \
+            --cov=ml \
+            --cov-branch \
+            --cov-report=term-missing \
+            --cov-report=html:htmlcov \
+            --cov-report=xml:coverage.xml
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage-report
+          path: |
+            htmlcov/
+            coverage.xml
+          if-no-files-found: warn
+          retention-days: 14
+
 
       - name: Install Playwright Chromium
         run: |
