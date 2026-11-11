@@ -13,6 +13,11 @@ from backend.preprocessing import (
 )
 from ml.dataset import normalize_spectrogram
 from ml.model import EmotionCNN, EMOTIONS
+from backend.preprocessing import (
+    SAMPLE_RATE,
+    extract_features,
+    validate_audio_activity,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -93,8 +98,7 @@ def predict_emotion(audio_bytes: bytes):
     if audio.size == 0 or not np.all(np.isfinite(audio)):
         raise ValueError("Invalid or empty audio.")
 
-    if np.max(np.abs(audio)) < 1e-5:
-        raise ValueError("Audio appears to be silent.")
+    audio = validate_audio_activity(audio)
 
     # Use the same preprocessing as training.
     features = extract_features(audio)

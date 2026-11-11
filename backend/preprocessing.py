@@ -159,3 +159,26 @@ def preprocess_audio(file_path: str | Path) -> np.ndarray:
     """
     audio = load_audio(file_path)
     return extract_features(audio)
+
+
+def validate_audio_activity(audio, min_rms=0.005):
+    """
+    Reject recordings with insufficient audio energy.
+
+    This is a basic silence detector, not a
+    complete speech activity detector.
+    """
+    audio = np.asarray(audio, dtype=np.float32)
+
+    if audio.size == 0 or not np.all(np.isfinite(audio)):
+        raise ValueError("Invalid or empty audio recording.")
+
+    rms = float(np.sqrt(np.mean(audio ** 2)))
+
+    if rms < min_rms:
+        raise ValueError(
+            "No audible speech detected. "
+            "Please record your voice and try again."
+        )
+
+    return audio

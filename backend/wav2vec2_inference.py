@@ -12,6 +12,7 @@ from backend.preprocessing import (
     SAMPLE_RATE,
     remove_silence,
     standardize_audio,
+    validate_audio_activity,
 )
 from ml.model import EMOTIONS
 
@@ -57,8 +58,7 @@ def predict_wav2vec2(audio_bytes: bytes):
     if audio.size == 0 or not np.all(np.isfinite(audio)):
         raise ValueError("Invalid audio recording.")
 
-    if np.max(np.abs(audio)) < 1e-5:
-        raise ValueError("Audio appears to be silent.")
+    audio = validate_audio_activity(audio)
 
     # Match our Wav2Vec2 training preprocessing.
     audio = remove_silence(audio)
