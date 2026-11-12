@@ -28,11 +28,23 @@ jobs:
             requirements.txt
             requirements-dev.txt
 
+      
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
+
+          # Install CPU-only PyTorch to avoid large NVIDIA CUDA packages.
+          python -m pip install "torch==2.15.0+cpu" \
+            --index-url https://download.pytorch.org/whl/cpu
+
+          # Install the remaining project dependencies.
           python -m pip install -r requirements-dev.txt
+
+          # Verify that CPU-only PyTorch was preserved.
+          python -c "import torch; print('PyTorch:', torch.__version__); assert '+cpu' in torch.__version__"
+
           python -m pip check
+
 
       
       - name: Run Python unit and API tests with coverage
