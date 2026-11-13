@@ -205,3 +205,53 @@ def test_internal_model_error(client):
     result = response.get_json()
     assert "error" in result
     assert "Model failure" not in result["error"]
+
+
+def test_prediction_response_has_all_probabilities(
+    client,
+    mock_prediction,
+):
+    with patch(
+        "backend.app.predict_wav2vec2",
+        return_value=mock_prediction.copy(),
+    ):
+        response = upload_audio(client, "wav2vec2")
+
+    assert response.status_code == 200
+
+    result = response.get_json()
+
+    assert set(result["probabilities"]) == {
+        "neutral",
+        "happy",
+        "sad",
+        "angry",
+    }
+
+    assert all(
+        isinstance(value, (int, float))
+        and 0 <= value <= 1
+        for value in result["probabilities"].values()
+    )
+
+
+def test_audio_upload_exceeds_size_limit(client):
+    oversized_audio = b"x" * (10 * 1024 * 1024 + 1)
+
+    response = client.post(
+        "/api/predict",
+        data={
+            "audio": (
+                BytesIO(oversized_audio),
+                "oversized.wav",
+            ),
+            "model": "cnn",
+        },
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 413
+    assert (
+        response.get_json()["error"]
+        == "Audio file exceeds the 10 MB limit."
+    )
